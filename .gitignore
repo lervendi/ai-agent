@@ -1,0 +1,10 @@
+.python-version
+README.md
+pyproject.toml
+uv.lock
+.env
+.venv
+.python-version
+__pycache__/
+*.pyc
+.DS_Store
