@@ -1,5 +1,7 @@
 import os
 import subprocess
+from google import genai
+from google.genai import types
 
 def run_python_file(working_directory, file_path, args=[]):
     full_path = os.path.join(working_directory, file_path)
@@ -41,6 +43,25 @@ def run_python_file(working_directory, file_path, args=[]):
 
     result = "\n".join(output)
     return result
+
+schema_run_python_file = types.FunctionDeclaration(
+    name="run_python_file",
+    description="Excutes a specified Python file within the working directory and captures its output.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="Relative path of the Python file to execute within the working directory.",
+            ),
+            "args": types.Schema(
+                type=types.Type.ARRAY,
+                items=types.Schema(type=types.Type.STRING),
+                description="List of command-line arguments to pass to the Python file.",
+            ),
+        },
+    ),
+)
 
 
 
