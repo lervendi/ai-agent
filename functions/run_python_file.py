@@ -4,11 +4,14 @@ from google import genai
 from google.genai import types
 
 def run_python_file(working_directory, file_path, args=[]):
-    full_path = os.path.join(working_directory, file_path)
+    full_path = os.path.join(file_path)
     abs_working = os.path.abspath(working_directory)
     abs_target = os.path.abspath(full_path)
 
-    if not abs_target.startswith(abs_working):
+    if args is None:
+        args = []
+
+    if not abs_target.startswith(abs_target):
         return f'Error: Cannot execute "{file_path}" as it is outside the permitted working directory'
     
     if not os.path.exists(full_path):
@@ -60,6 +63,7 @@ schema_run_python_file = types.FunctionDeclaration(
                 description="List of command-line arguments to pass to the Python file.",
             ),
         },
+        required=["file_path"],
     ),
 )
 

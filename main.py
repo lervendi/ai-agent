@@ -7,6 +7,7 @@ from functions.get_files_info import get_files_info, schema_get_files_info
 from functions.get_file_content import get_file_content, schema_get_file_content
 from functions.write_file import write_file, schema_write_file
 from functions.run_python_file import run_python_file, schema_run_python_file
+from functions.call_function import call_function
 
 
 def main():
@@ -32,6 +33,8 @@ def main():
                     - Read file contents
                     - Execute Python files with optional arguments
                     - Write or overwrite files
+
+                    When running a Python file, the args list is optional. If not provided, assueme no arguments.
                     """
 
     available_functions = types.Tool(
@@ -53,16 +56,32 @@ def main():
 
     if response.function_calls:
         for fc in response.function_calls:
-            print(f"Calling function: {fc.name}({fc.args})")
+
+            tool_msg = call_function(fc, verbose=verbose)
+
+            if not tool_msg.parts or not tool_msg.parts[0].function_response.response:
+                raise RuntimeError("Function call did not return a response.")
+            
+            result_dict = tool_msg.parts[0].function_response.response
+
+            if verbose:
+                print(f"Function result: {result_dict}")
+
+            messages.append(types.Content(role="tool", parts=tool_msg.parts))
+
     else:
         print(response.text)
 
     if verbose:
+        """"
         print(f"User prompt: {user_prompt}")
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
 
+        """
+        print("Function calls:", fc.name , fc.args )
 
+    
 if __name__ == "__main__":
     main()
 
